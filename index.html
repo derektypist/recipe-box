@@ -3,20 +3,490 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Recipe Box</title>
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
 	<link rel="preconnect" href="https://fonts.googleapis.com"> 
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
 	<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto&family=Special+Elite&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="style.css">
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/react/17.0.2/umd/react.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/17.0.2/umd/react-dom.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/17.0.2/umd/react-dom.production.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
 
 </head>
 <body>
 <div id="app"></div>
-<script type="text/babel" src="script.js"></script>
+<script type="text/babel">
+// Local Storage Key
+const localStorageKey = "_derek_recipes";
+
+// Create Local Storage Manager Class
+class LocalStorageManager {
+  set(obj) {
+    let currentState = JSON.stringify(obj);
+    localStorage.setItem("_derek_recipes", currentState);
+  }
+  get() {
+    let currentState = localStorage.getItem("_derek_recipes");
+    return JSON.parse(currentState);
+  }
+}
+
+// Create Recipe Index
+const recipeIndex = [
+  {
+    recipe: "Penne Puttanesca",
+    ingredients: [
+      "350g Dried Penne Pasta",
+      "1 tbsp olive oil",
+      "1 onion, finely chopped",
+      "400g can chopped tomatoes",
+      "2 tsp dried oregano",
+      "120g can boneless and skinless sardine fillets, drained",
+      "50g Black Olives, pitted",
+      "A small handful of curly parsley, chopped",
+      "Salt and Freshly Ground Black Pepper"
+    ],
+    directions: [
+      "Bring a large pan of salted water to the boil and cook the pasta according to the pack instructions.  Drain well, keeping a cupful of the cooking water to one side.",
+      "Meanwhile, heat the oil in a large pan and fry the onion for 10 minutes until softened but not coloured.  Add the tomatoes and oregano, then bring the mixture to the boil, reduce the heat and simmer for 15 minutes until thickened.  Stir in the sardines and olives - the stirring should help break up the fish slightly.",
+      "Add the pasta to the sauce and toss well to combine.  Add a little of the pasta water if the mixture looks too dry.  Check the seasoning, then divide among four bowls.  Garnish with parsley and serve immediately."
+    ]
+  },
+  {
+    recipe: "Fish and Vegetables",
+    ingredients: ["Fish", "Potatoes", "Green Beans", "Carrots"],
+    directions: [
+      "Wash the potatoes, green beans and carrots",
+      "Chop the green beans and carrots into smaller pieces",
+      "Preheat the oven to 220 °C",
+      "Put the fish in the oven and bake for 25 minutes",
+      "Put the potatoes in boiling water, bring to boil and simmer for 20 minutes.  Drain well.",
+      "Put the carrots in boiling water, bring to boil and simmer for 8 minutes.  Drain well.",
+      "Put the green beans in boiling water, bring to boil and simmer for 6 minutes.  Drain well."
+    ]
+  },
+  {
+    recipe: "Walnut and Creamy Blue Cheese",
+    ingredients: [
+      "1 tsp olive oil",
+      "1 crushed garlic clove",
+      "25g Toasted Walnut Pieces",
+      "100g Cubed Gorgonzola",
+      "150ml Single Cream",
+      "Ground Black Pepper"
+    ],
+    directions: [
+      "Heat 1 tsp olive oil in a small pan.",
+      "Add 1 crushed garlic clove and 25g Toasted Walnut Pieces.  Cook for 1 minute.",
+      "Add 100g Cubed Gorgonzola and 150ml Single Cream.",
+      "Season with Ground Black Pepper."
+    ]
+  },
+  {
+    recipe: "Luscious Lemon Passion Pots",
+    ingredients: [
+      "150g Condensed Milk",
+      "50ml Double Cream",
+      "Grated Zest and Juice of 1 large lemon",
+      "1 passion fruit"
+    ],
+    directions: [
+      "Put the condensed milk, double cream and lemon zest and juice into a medium bowl and whisk until thick and fluffy.  Spoon into small ramekins or coffee cups and chill until needed - or carry on with the recipe if you cannot wait",
+      "To serve, halve the passion fruit, scoop out the seeds and use to decorate the lemon pots."
+    ]
+  },
+  {
+    recipe: "Chocolate Sauce",
+    ingredients: ["Plain Chocolate", "Water"],
+    directions: [
+      "Chop plain chocolate (at least 70% cocoa solids) and put it in a saucepan with 50ml water per 100g chocolate.",
+      "Heat slowly allowing the chocolate to melt, then stir until the sauce is smooth."
+    ]
+  }
+];
+
+// Create Instance of Local Storage Manager
+const LSM = new LocalStorageManager();
+if (LSM.get("_derek_recipes") === null) {
+  LSM.set([
+    recipeIndex[0],
+    recipeIndex[1],
+    recipeIndex[2],
+    recipeIndex[3],
+    recipeIndex[4]
+  ]);
+}
+
+// App
+class App extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      showDialog: false,
+      recipes: LSM.get("_derek_recipes"),
+      dialogType: ""
+    };
+    this.getRecipeList = this.getRecipeList.bind(this);
+    this.showOnClick = this.showOnClick.bind(this);
+    this.showRecipe = this.showRecipe.bind(this);
+    this.defineDialogType = this.defineDialogType.bind(this);
+    this.addRecipe = this.addRecipe.bind(this);
+    this.editRecipe = this.editRecipe.bind(this);
+    this.deleteRecipe = this.deleteRecipe.bind(this);
+    this.populateFormData = this.populateFormData.bind(this);
+    this.toggleDialogDisplay = this.toggleDialogDisplay.bind(this);
+  }
+  componentDidMount() {
+    let recipes = LSM.get("_derek_recipes");
+    let recipe = recipes[0].recipe.toLowerCase();
+    this.setState({
+      currentRecipe: recipe
+    });
+  }
+
+  // Get Recipe List
+  getRecipeList() {
+    let allRecipes = [];
+    let recipes = LSM.get("_derek_recipes");
+    recipes.map((recipe) => {
+      allRecipes.push(recipe.recipe.toLowerCase());
+    });
+    return allRecipes;
+  }
+
+  // Show Recipe on Click
+  showOnClick(e) {
+    let currentRecipe = e.target.innerText;
+    currentRecipe = currentRecipe.toLowerCase().split(" ").join("-");
+    this.showRecipe(currentRecipe);
+  }
+
+  // Show Recipe
+  showRecipe(recipe) {
+    this.setState({
+      currentRecipe: recipe
+    });
+  }
+
+  // Define Dialog Type
+  defineDialogType(e) {
+    if (this.state.dialogType === "Add Recipe") {
+      this.addRecipe();
+    } else {
+      this.editRecipe();
+    }
+  }
+
+  // Add Recipe
+  addRecipe() {
+    let dialogIDs =
+      this.state.dialogType === "Add Recipe"
+        ? ["add-recipe-name", "add-ingredients", "add-directions"]
+        : ["edit-recipe-name", "edit-ingredients", "edit-directions"];
+    let recipeName = document
+      .getElementById(dialogIDs[0])
+      .value.replace(/\s+/g, "-");
+    if (recipeName.endsWith("-")) recipeName = recipeName.slice(0, -1);
+    let myNewRecipe = {
+      recipe: recipeName,
+      ingredients: document.getElementById(dialogIDs[1]).value.split("\\"),
+      directions: document.getElementById(dialogIDs[2]).value.split("\\")
+    };
+    let recipes = LSM.get("_derek_recipes");
+    let recipeList = this.getRecipeList();
+    if (myNewRecipe.recipe === "") {
+      alert("Your recipe must have a name!");
+    } else if (recipeList.indexOf(recipeName.toLowerCase()) !== -1) {
+      recipeName = recipeName.replace("-", " ");
+      alert(`${recipeName} has already been added to the Recipe Box!`);
+    } else {
+      recipes.push(myNewRecipe);
+      LSM.set(recipes);
+      setTimeout(() => {
+        this.showRecipe(myNewRecipe.recipe.toLowerCase());
+      }, 10);
+      this.setState({
+        recipes: recipes,
+        showDialog: !this.state.showDialog
+      });
+    }
+  }
+
+  // Edit Recipe
+  editRecipe() {
+    let recipes = LSM.get("_derek_recipes");
+    recipes = recipes.filter((obj) => {
+      return obj.recipe.toLowerCase() !== this.state.editThis;
+    });
+    LSM.set(recipes);
+    this.addRecipe();
+  }
+
+  // Delete Recipe
+  deleteRecipe(e) {
+    if (
+      confirm(
+        `Are you sure you want to delete ${e.currentTarget.value.replace(
+          "-",
+          " "
+        )} from the recipe box?`
+      )
+    ) {
+      // Handle Tab Focus after Delete
+      let tabToFocus;
+      let recipeList = this.getRecipeList();
+      recipeList.indexOf(e.currentTarget.value.toLowerCase()) >= 1
+        ? tabToFocus =
+            recipeList[
+              recipeList.indexOf(e.currentTarget.value.toLowerCase()) - 1
+            ]
+        : tabToFocus = recipeList[1];
+      this.showRecipe(tabToFocus);
+
+      // Delete the recipe
+      let recipes = LSM.get("_derek_recipes");
+      recipes = recipes.filter((obj) => {
+        return obj.recipe !== e.currentTarget.value;
+      });
+      // Reset Storage & State
+      LSM.set(recipes);
+      this.setState({
+        recipes: recipes
+      });
+    }
+  }
+
+  // Populate Form Data
+  populateFormData(str) {
+    // If dialog is being closed or opened by add button, do nothing
+    if (str === "") return;
+    else {
+      // If dialog is being opened to edit, find the correct recipe
+      let recipe;
+      for (let i = 0; i < this.state.recipes.length; i++) {
+        if (this.state.recipes[i].recipe === str) {
+          recipe = this.state.recipes[i];
+        }
+      }
+      // Wait for dialog to open then populate data
+      setTimeout(() => {
+        document.getElementById(
+          "edit-recipe-name"
+        ).value = recipe.recipe.replace(/-/g, " ");
+        document.getElementById(
+          "edit-ingredients"
+        ).value = recipe.ingredients.join(" \\ ");
+        document.getElementById(
+          "edit-directions"
+        ).value = recipe.directions.join(" \\\n\n");
+        this.setState({ editThis: recipe.recipe.toLowerCase() });
+      }, 10);
+    }
+  }
+
+  // Toggle Dialog Display
+  toggleDialogDisplay(e) {
+    let indicator =
+      e.currentTarget.title !== undefined ? e.currentTarget.title : "";
+    this.setState({
+      dialogType: indicator,
+      showDialog: !this.state.showDialog
+    });
+    let val = e.currentTarget.value === undefined ? "" : e.currentTarget.value;
+    this.populateFormData(val);
+  }
+
+  render() {
+    let dialogText =
+      this.state.dialogType === "Add Recipe"
+        ? ["Add a Recipe", "Add"]
+        : ["Edit Recipe", "Save"];
+    let dialogIDs =
+      this.state.dialogType === "Add Recipe"
+        ? [
+            "add-recipe-name",
+            "add-ingredients",
+            "add-directions",
+            "add-submit",
+            "add-close"
+          ]
+        : [
+            "edit-recipe-name",
+            "edit-ingredients",
+            "edit-directions",
+            "edit-submit",
+            "edit-close"
+          ];
+    let dialogBox;
+    if (this.state.showDialog) {
+      dialogBox = (
+        <div className="dialog-box dialog-wrap">
+          <Dialog
+            dialogType={dialogText[0]}
+            buttonType={dialogText[1]}
+            nameID={dialogIDs[0]}
+            ingredientsID={dialogIDs[1]}
+            directionsID={dialogIDs[2]}
+            submitID={dialogIDs[3]}
+            closeID={dialogIDs[4]}
+            handleSubmit={this.defineDialogType}
+            handleClose={this.toggleDialogDisplay}
+          />
+        </div>
+      );
+    }
+    return (
+      <div className="recipe-box-wrapper">
+        <div className="heading">
+          <i className="fab fa-free-code-camp"></i>
+          <div>Recipe Box</div>
+        </div>
+        {dialogBox}
+        <IndexView
+          handleClick={this.showOnClick}
+          contents={this.state.recipes}
+        />
+        <RecipePane
+          contents={this.state.recipes}
+          displayRecipe={this.state.currentRecipe}
+          handleDelete={this.deleteRecipe}
+          handleEdit={this.toggleDialogDisplay}
+        />
+        <div className="add-button">
+          <button
+            id="add-recipe"
+            title="Add Recipe"
+            onClick={this.toggleDialogDisplay}
+          >
+            <i className="fas fa-plus"></i>
+          </button>
+        </div>
+      </div>
+    );
+  }
+}
+
+// Dialog
+class Dialog extends React.Component {
+  render() {
+    return (
+      <div className="dialog-box">
+        <h2>{this.props.dialogType}</h2>
+        <div className="input-title">Recipe</div>
+        <textarea
+          rows="1"
+          id={this.props.nameID}
+          placeholder="Recipe Name (e.g. Noodles)"
+        ></textarea>
+        <div className="input-title">Ingredients</div>
+        <textarea
+          id={this.props.ingredientsID}
+          placeholder={`Separate each ingredient with a \\: \n\n1 Packet Noodles \n300ml Boiling Water `}
+        />
+        <br />
+        <div className="input-title">Directions</div>
+        <textarea
+          id={this.props.directionsID}
+          placeholder={'Separate each step with a "\\": \n\nAdd the noodles, boiling water and the flavouring in a pan' + '\nBring to boil \nReduce to moderate heat and stir frequently for 4 minutes'}
+        />
+        <br />
+        <button onClick={this.props.handleClose} className="corner-close">
+          <i className="fas fa-times" />
+        </button>
+        <button id={this.props.submitID} onClick={this.props.handleSubmit}>
+          {this.props.buttonType}
+        </button>
+        <button id={this.props.closeID} onClick={this.props.handleClose}>
+          Close
+        </button>
+      </div>
+    );
+  }
+}
+
+// Index View
+class IndexView extends React.Component {
+  render() {
+    let recipes = this.props.contents;
+    let items = recipes.map((recipe, i) => (
+      <div
+        onClick={this.props.handleClick}
+        key={i}
+        id={i}
+        className="index-view-item"
+        id={"view-" + recipe.recipe.toLowerCase()}
+      >
+        {recipe.recipe.replace(/-/g, " ")}
+      </div>
+    ));
+    return (
+      <div id="index-view">{items}</div>
+      )
+  }
+}
+
+// Recipe Pane
+class RecipePane extends React.Component {
+  render() {
+    let recipes = this.props.contents;
+    let displayRecipe;
+    for (let i = 0; i < recipes.length; i++) {
+      if (recipes[i].recipe.toLowerCase() === this.props.displayRecipe) {
+        displayRecipe = (
+          <div id={recipes[i].recipe.toLowerCase()} className="recipe-view">
+            <div className="recipe-title">
+              <div className="recipe-view-name title-row">
+                {recipes[i].recipe.replace(/-/g, " ")}
+              </div>
+              <div className="title-row">
+                <button
+                  id={"delete-" + recipes[i].recipe.toLowerCase()}
+                  onClick={this.props.handleDelete}
+                  title="Delete Recipe"
+                  value={recipes[i].recipe}
+                >
+                  <i className="fas fa-trash" />
+                </button>
+                <button
+                  id={"edit-" + recipes[i].recipe.toLowerCase()}
+                  onClick={this.props.handleEdit}
+                  title="Edit Recipe"
+                  value={recipes[i].recipe}
+                >
+                  <i className="fas fa-edit" />
+                </button>
+              </div>
+            </div>
+            <div className="recipe-body">
+              <h4>Ingredients:</h4>
+              <ul className="ingredient list">
+                {recipes[i].ingredients.map((ingredient, j) => (
+                  <li key={j}>{ingredient}</li>
+                ))}
+              </ul>
+              <h4>Directions:</h4>
+              <ol className="directions list">
+                {recipes[i].directions.map((step, k) => (
+                  <li key={k}>{step}</li>
+                ))}
+              </ol>
+            </div>
+          </div>
+        );
+      }
+    }
+    return (
+      <div>
+        {displayRecipe}
+      </div>);
+  }
+}
+
+ReactDOM.render(<App />, document.getElementById("app"));
+</script>
 </body>
 </html>
+
