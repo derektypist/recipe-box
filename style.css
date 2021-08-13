@@ -1,0 +1,261 @@
+/* Variables */
+
+:root {
+  --background: #009b77;
+  --dialog-main: #926aa6;
+  --body: #4b5335;
+  --titles: #34568b;
+}
+
+/* Body */
+body {
+  background: var(--background);
+  color: white;
+}
+
+/* Recipe Title */
+.recipe-title,
+h4,
+.index-view-item,
+.dialog-box {
+  font-family: "Special Elite", cursive;
+}
+
+.recipe-box-wrapper {
+  margin: 20px 15%;
+}
+
+/* Heading */
+.heading {
+  font-size: 40px;
+  text-align: center;
+  margin-bottom: 20px;
+  font-family: "Bebas Neue", cursive;
+}
+
+.heading div, i {
+  display: inline-block;
+  cursor: pointer;
+  letter-spacing: 0.1em;
+}
+
+/* Buttons */
+button:hover {
+  cursor: pointer;
+}
+
+.unstyle-button {
+  background: none;
+  border: none;
+  outline: none;
+  font-size: 32px;
+}
+
+.unstyle-button:hover {
+  color: var(--background);
+}
+
+#index-view {
+  height: 95px;
+  overflow: auto;
+  margin-bottom: 5px;
+  border: 5px solid var(--titles);
+  border-bottom: 10px solid var(--titles);
+  border-top: 10px solid var(--titles);
+}
+
+#index-view .index-view-item {
+  padding: 7px;
+  cursor: pointer;
+}
+
+#index-view .index-view-item:nth-child(odd) {
+  background: var(--titles);
+  color: var(--background);
+}
+
+#index-view .index-view-item:hover {
+  color: var(--body);
+}
+
+.active {
+  background: var(--titles) !important;
+  border: 2px solid var(--titles) !important;
+  color: var(--background) !important;
+}
+
+.add-button {
+  background: var(--titles);
+  border-bottom-right-radius: 10px;
+  border-bottom-left-radius: 10px;
+  padding: 5px;
+}
+
+.add-button button .unstyle-button {
+  background: none;
+  border: none;
+  outline: none;
+  font-size: 32px;
+}
+
+/* Recipe Views and Titles */
+.recipe-view .list {
+  max-width: 600px;
+}
+
+.recipe-view .recipe-body {
+  background: var(--body);
+  height: 330px;
+  overflow-y: scroll;
+  padding: 0 10px;
+  font-family: "Roboto", Arial, Verdana, sans-serif;
+} 
+
+.recipe-view .recipe-body h4 {
+  letter-spacing: 0.1em;
+}
+  
+.recipe-view .recipe-title {
+  background: var(--titles);
+  padding: 10px;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+}
+
+.recipe-view .recipe-title .title-row {
+  display: inline-block;
+}
+
+.recipe-view .recipe-title .unstyle-button {
+  background: none;
+  border: none;
+  outline: none;
+  font-size: 32px;
+}
+
+.recipe-view .recipe-title .fa-edit {
+  vertical-align: bottom;
+}
+
+.recipe-view .recipe-title div:first-of-type {
+  margin-right: 10px;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+/* Dialog */
+
+.dialog-wrap {
+  box-shadow: 2px 10px 10px 5000px rgba(0, 0, 0, 0.6) !important;
+}
+
+.dialog-box {
+  text-align: center;
+  position: fixed;
+  width: 500px;
+  min-width: 300px;
+  top: 50%;
+  left: 50%;
+  margin-left: -250px;
+  margin-top: -200px;
+  box-shadow: 3px 3px 10px black;
+  border-radius: 15px;
+  background: var(--dialog-main);
+  z-index: 1000;
+}
+
+.dialog-box .input-title {
+  margin: 5px;
+}
+
+.dialog-box textarea {
+  margin-bottom: 10px;
+  background: lightblue;
+  font-family: "Roboto", Arial, Verdana, sans-serif;
+  min-width: 300px;
+  min-height: 60px;
+  resize: vertical;
+  color: #22395d;
+  font-weight: bold;
+  font-size: 13px;
+  overflow: auto;
+}
+
+.dialog-box textarea:focus {
+  box-shadow: 0 0 5px var(--background);
+  outline: 1px solid var(--background);
+  border: 1px solid var(--background);
+}
+
+.dialog-box textarea:nth-of-type(3) {
+  min-height: 100px;
+}
+
+.dialog-box textarea:first-of-type {
+  resize: none;
+  min-height: 15px !important;
+}
+
+.dialog-box button:not(:first-of-type) {
+  margin-bottom: 15px;
+}
+
+.dialog-box button {
+  background: #294470;
+  border: none;
+  outline: none;
+  font-size: 15px;
+  font-family: "Bebas Neue", cursive;
+  margin-right: 8px;
+  border-radius: 5px;
+}
+
+.dialog-box .corner-close {
+  background: none;
+  border: none;
+  outline: none;
+  font-size: 24px !important;
+  color: #22395d;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+}
+
+/* Media Queries */
+@media screen and (max-width: 750px) {
+  .recipe-box-wrapper {
+    margin: 5%;
+  }
+  .heading {
+    font-size: 30px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+  }
+}
+
+@media screen and (max-width: 350px) {
+  .dialog-box {
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    margin-left: 0;
+    margin-top: 0;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .recipe-box-wrapper {
+    margin: 0;
+  }
+
+  .heading {
+    font-size: 24px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+  }
+
+  .recipe-body {
+    max-height: 200px;
+  }
+}
